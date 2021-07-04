@@ -1,8 +1,6 @@
 import { accessSpotifyAPI } from "./fetchHelper";
 import { Track, TrackResponse, SnapshotResponse } from "./types";
-
-const MILLISECONDS_IN_A_MINUTE = 60 * 1000;
-const ONE_WEEK = 7 * 24 * 60 * MILLISECONDS_IN_A_MINUTE;
+import { isLessThanAWeekOld } from "./timeHelpers";
 
 const playlistRequestURL = (playlistID: string, queryParams: URLSearchParams) =>
   `https://api.spotify.com/v1/playlists/${playlistID}/tracks?${queryParams.toString()}`;
@@ -38,9 +36,8 @@ const addNewTracks = async (sourcePlaylist: string, targetPlaylist: string) => {
     ({ track }) => track.id
   );
 
-  const oneWeekAgo = Date.now() - ONE_WEEK - 5 * MILLISECONDS_IN_A_MINUTE; // with a buffer because I don't trust computers
   const trackIDs = newTracks
-    .filter(({ added_at }) => Date.parse(added_at + "+00:00") > oneWeekAgo)
+    .filter(({ added_at }) => isLessThanAWeekOld(added_at))
     .map((track) => track.track.id)
     .filter((id) => !targetListTracks.includes(id));
 
