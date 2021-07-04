@@ -34,12 +34,16 @@ const addTracks = async (playlistID: string, trackIds: string[]) => {
 };
 
 const addNewTracks = async (sourcePlaylist: string, targetPlaylist: string) => {
-  const tracks = await getTracks(sourcePlaylist);
+  const newTracks = await getTracks(sourcePlaylist);
+  const targetListTracks = (await getTracks(targetPlaylist)).map(
+    ({ track }) => track.id
+  );
 
   const oneWeekAgo = Date.now() - ONE_WEEK;
-  const trackIDs = tracks
-    .filter((track) => Date.parse(track.added_at + "+00:00") > oneWeekAgo)
-    .map((track) => track.track.id);
+  const trackIDs = newTracks
+    .filter(({ added_at }) => Date.parse(added_at + "+00:00") > oneWeekAgo)
+    .map((track) => track.track.id)
+    .filter((id) => !targetListTracks.includes(id));
 
   addTracks(targetPlaylist, trackIDs);
 };
