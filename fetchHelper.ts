@@ -2,18 +2,16 @@ import { ErrorResponse } from "./types";
 
 const BEARER_TOKEN = "";
 
-const REQUEST_HEADER = {
-  Accept: "application/json",
-  Authorization: "Bearer " + BEARER_TOKEN,
-  "Content-Type": "application/json",
-};
-
 export const accessSpotifyAPI = async function <ResponseType>(
   uri: string,
   method: "GET" | "POST"
 ) {
   const response = await fetch(uri, {
-    headers: REQUEST_HEADER,
+    headers: {
+      Accept: "application/json",
+      Authorization: "Bearer " + BEARER_TOKEN,
+      "Content-Type": "application/json",
+    },
     method,
   });
 
