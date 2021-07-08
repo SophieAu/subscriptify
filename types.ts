@@ -11,7 +11,7 @@ export type ErrorResponse = {
 
 export type Track = {
   added_at: string;
-  track: { id: string };
+  track: { uri: string };
 };
 
 export type SnapshotResponse = {

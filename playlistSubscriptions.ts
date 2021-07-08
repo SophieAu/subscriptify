@@ -17,11 +17,9 @@ const getTracks = async (playlistID: string): Promise<Track[]> => {
   } catch (e) {}
 };
 
-const addTracks = async (playlistID: string, trackIds: string[]) => {
-  const preparedTrackIds = trackIds.map((id) => "spotify:track:" + id);
-
+const addTracks = async (playlistID: string, trackURIs: string[]) => {
   var queryParams = new URLSearchParams();
-  queryParams.append("uris", preparedTrackIds.join(","));
+  queryParams.append("uris", trackURIs.join(","));
 
   const uri = playlistRequestURL(playlistID, queryParams);
 
@@ -33,13 +31,13 @@ const addTracks = async (playlistID: string, trackIds: string[]) => {
 const addNewTracks = async (sourcePlaylist: string, targetPlaylist: string) => {
   const newTracks = await getTracks(sourcePlaylist);
   const targetListTracks = (await getTracks(targetPlaylist)).map(
-    ({ track }) => track.id
+    ({ track }) => track.uri
   );
 
-  const trackIDs = newTracks
+  const trackURIs = newTracks
     .filter(({ added_at }) => isLessThanAWeekOld(added_at))
-    .map((track) => track.track.id)
+    .map((track) => track.track.uri)
     .filter((id) => !targetListTracks.includes(id));
 
-  addTracks(targetPlaylist, trackIDs);
+  addTracks(targetPlaylist, trackURIs);
 };
