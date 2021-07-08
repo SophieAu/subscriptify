@@ -1,11 +1,11 @@
 import { accessSpotifyAPI } from "./fetchHelper";
-import { Track, TrackResponse, SnapshotResponse } from "./types";
+import { TrackResponse, SnapshotResponse } from "./types";
 import { isLessThanAWeekOld } from "./timeHelpers";
 
 const playlistRequestURL = (playlistID: string, queryParams: URLSearchParams) =>
   `https://api.spotify.com/v1/playlists/${playlistID}/tracks?${queryParams.toString()}`;
 
-const getTracks = async (playlistID: string): Promise<Track[]> => {
+const getTracks = async (playlistID: string) => {
   var queryParams = new URLSearchParams();
   queryParams.append("market", "DE");
   queryParams.append("fields", "items(added_at, track.id)");
