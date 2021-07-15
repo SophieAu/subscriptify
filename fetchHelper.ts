@@ -4,7 +4,7 @@ const BEARER_TOKEN = "";
 
 export const accessSpotifyAPI = async function <ResponseType>(
   uri: string,
-  method: "GET" | "POST"
+  method: "GET" | "POST" = "GET"
 ) {
   const response = await fetch(uri, {
     headers: {

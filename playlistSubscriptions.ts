@@ -13,7 +13,7 @@ const getTracks = async (playlistID: string) => {
   const uri = playlistRequestURL(playlistID, queryParams);
 
   try {
-    return (await accessSpotifyAPI<TrackResponse>(uri, "GET")).items;
+    return (await accessSpotifyAPI<TrackResponse>(uri)).items;
   } catch (e) {}
 };
 
