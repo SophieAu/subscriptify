@@ -5,7 +5,7 @@ var request = require("request"); // "Request" library
 var cors = require("cors");
 var querystring = require("querystring");
 var cookieParser = require("cookie-parser");
-const { client_id, redirect_uri, client_secret } = require("./KEYS");
+const { client_id, redirect_uri, client_secret, state_key } = require("./KEYS");
 
 /**
  * Generates a random string containing numbers and letters
@@ -23,8 +23,6 @@ var generateRandomString = function (length) {
   return text;
 };
 
-var stateKey = "spotify_auth_state";
-
 var app = express();
 
 app
@@ -34,7 +32,7 @@ app
 
 app.get("/login", function (req, res) {
   var state = generateRandomString(16);
-  res.cookie(stateKey, state);
+  res.cookie(state_key, state);
 
   // your application requests authorization
   var scope = "playlist-modify-public playlist-modify-private user-follow-read";
@@ -56,7 +54,7 @@ app.get("/callback", function (req, res) {
 
   var code = req.query.code || null;
   var state = req.query.state || null;
-  var storedState = req.cookies ? req.cookies[stateKey] : null;
+  var storedState = req.cookies ? req.cookies[state_key] : null;
 
   if (state === null || state !== storedState) {
     res.redirect(
@@ -66,7 +64,7 @@ app.get("/callback", function (req, res) {
         })
     );
   } else {
-    res.clearCookie(stateKey);
+    res.clearCookie(state_key);
     var authOptions = {
       url: "https://accounts.spotify.com/api/token",
       form: {
