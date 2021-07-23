@@ -94,7 +94,9 @@
 
         if (error) {
           alert('There was an error during the authentication');
-        } else {
+          return
+        }
+
           if (access_token) {
             // render oauth info
             oauthPlaceholder.innerHTML = oauthTemplate({
@@ -134,7 +136,7 @@
               });
             });
           }, false);
-        }
+        
       })();
     </script>
   </body>
