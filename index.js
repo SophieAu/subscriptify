@@ -1,5 +1,7 @@
 //@ts-check
 
+import { BEARER_TOKEN } from "./KEYS";
+
 const express = require("express"); // Express web server framework
 const request = require("request"); // "Request" library
 const cors = require("cors");
@@ -60,6 +62,7 @@ app.get("/callback", (req, res) => {
 
     const access_token = body.access_token;
     const refresh_token = body.refresh_token;
+    BEARER_TOKEN.set(access_token);
 
     const options = {
       url: "https://api.spotify.com/v1/me",
@@ -90,6 +93,7 @@ app.get("/refresh_token", (req, res) => {
   request.post(options, (error, response, body) => {
     if (error || response.statusCode !== 200) return;
 
+    BEARER_TOKEN.set(body.access_token);
     res.send({ access_token: body.access_token });
   });
 });

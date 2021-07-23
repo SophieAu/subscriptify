@@ -1,6 +1,6 @@
 import { ErrorResponse } from "./types";
-
-const BEARER_TOKEN = "";
+import "isomorphic-fetch";
+import { BEARER_TOKEN } from "./KEYS";
 
 export const accessSpotifyAPI = async function <ResponseType>(
   uri: string,
@@ -9,7 +9,7 @@ export const accessSpotifyAPI = async function <ResponseType>(
   const response = await fetch(uri, {
     headers: {
       Accept: "application/json",
-      Authorization: "Bearer " + BEARER_TOKEN,
+      Authorization: "Bearer " + BEARER_TOKEN.get(),
       "Content-Type": "application/json",
     },
     method,
