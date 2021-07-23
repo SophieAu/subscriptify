@@ -1,4 +1,5 @@
 node_modules/
+dist/
 
 // all dem secrets
-KEYS.js
+KEYS.ts

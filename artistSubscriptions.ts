@@ -21,8 +21,8 @@ export const getNewReleasesFromArtists = async () => {
 };
 
 const getFollowedArtists = async () => {
-  let uri = `https://api.spotify.com/v1/me/following`;
-  let followedArtists: Artist[];
+  let uri = `https://api.spotify.com/v1/me/following?type=artist`;
+  let followedArtists: Artist[] = [];
 
   while (!!uri) {
     const response = (await accessSpotifyAPI<ArtistResponse>(uri)).artists;

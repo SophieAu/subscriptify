@@ -1,6 +1,19 @@
 import { accessSpotifyAPI } from "./fetchHelper";
 import { TrackResponse, SnapshotResponse } from "./types";
 import { isLessThanAWeekOld } from "./timeHelpers";
+import { getNewReleasesFromArtists } from "./artistSubscriptions";
+
+export const addNewArtistsTracks = async (targetPlaylist: string) => {
+  const newTracks = await getNewReleasesFromArtists();
+  const targetListTracks = (await getAllTracks(targetPlaylist)).map(
+    ({ track }) => track.uri
+  );
+  const trackURIs = newTracks.filter((id) => !targetListTracks.includes(id));
+  console.log("adding: ");
+  console.log(trackURIs);
+
+  addTracks(targetPlaylist, trackURIs);
+};
 
 const playlistRequestURL = (playlistID: string, queryParams: URLSearchParams) =>
   `https://api.spotify.com/v1/playlists/${playlistID}/tracks?${queryParams.toString()}`;
@@ -12,9 +25,7 @@ const getAllTracks = async (playlistID: string) => {
 
   const uri = playlistRequestURL(playlistID, queryParams);
 
-  try {
     return (await accessSpotifyAPI<TrackResponse>(uri)).items;
-  } catch (e) {}
 };
 
 const addTracks = async (playlistID: string, trackURIs: string[]) => {
@@ -23,9 +34,7 @@ const addTracks = async (playlistID: string, trackURIs: string[]) => {
 
   const uri = playlistRequestURL(playlistID, queryParams);
 
-  try {
     return await accessSpotifyAPI<SnapshotResponse>(uri, "POST");
-  } catch (e) {}
 };
 
 const getNewTracks = async (playlistID: string) => {

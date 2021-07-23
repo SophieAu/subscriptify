@@ -28,6 +28,7 @@
         <div id="oauth">
         </div>
         <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
+        <button class="btn btn-default" id="get-artist-tracks">Get artists new tracks</button>
       </div>
     </div>
 
@@ -134,6 +135,11 @@
                 access_token: access_token,
                 refresh_token: refresh_token
               });
+            });
+          }, false);
+
+          document.getElementById('get-artist-tracks').addEventListener('click', function() {
+            $.ajax({ url: '/add_subscriptions' }).done(function(data) {
             });
           }, false);
         

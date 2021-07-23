@@ -9,6 +9,7 @@ const querystring = require("querystring");
 const cookieParser = require("cookie-parser");
 const { client_id, redirect_uri, state_key, authToken } = require("./KEYS");
 const { generateRandomString } = require("./util");
+const { addNewArtistsTracks } = require("./playlistSubscriptions");
 
 const app = express();
 
@@ -96,6 +97,16 @@ app.get("/refresh_token", (req, res) => {
     BEARER_TOKEN.set(body.access_token);
     res.send({ access_token: body.access_token });
   });
+});
+
+app.get("/add_subscriptions", (req, res) => {
+  // requesting access token from refresh token
+
+  console.log("toknennn: " + BEARER_TOKEN.get());
+
+  addNewArtistsTracks("3Bx9orXGNyLZ4S7S0gZ8Vo").then(() =>
+    console.log("added new tracks")
+  );
 });
 
 console.log("Listening on 8888");
