@@ -22,7 +22,7 @@ app.get("/login", (req, res) => {
   var queryParams = querystring.stringify({
     response_type: "code",
     client_id: client_id,
-    scope: "playlist-modify-private user-follow-read",
+    scope: "playlist-modify-public playlist-modify-private user-follow-read",
     redirect_uri: redirect_uri,
     state: state,
   });
