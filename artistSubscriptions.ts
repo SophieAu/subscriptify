@@ -48,7 +48,7 @@ const getNewReleasesByArtist = async (id: string) => {
 const getRelease = async (artistID: string, group: AlbumGroup) => {
   var queryParams = new URLSearchParams();
   queryParams.append("market", "DE");
-  queryParams.append("limit", "2");
+  queryParams.append("limit", "10");
   queryParams.append("include_groups", group);
 
   let uri = `https://api.spotify.com/v1/artists/${artistID}/albums?${queryParams.toString()}`;
@@ -71,21 +71,21 @@ const getRelease = async (artistID: string, group: AlbumGroup) => {
 };
 
 const getTracksWithArtist = async (artistId: string, releases: Release[]) => {
+  var queryParams = new URLSearchParams();
+  queryParams.append("ids", releases.map((r) => r.id).join(","));
+
+  let uri = `https://api.spotify.com/v1/albums?${queryParams.toString()}`;
   let newTracks: string[] = [];
 
-  for (const release of releases) {
-    let uri = `https://api.spotify.com/v1/albums/${release.id}/tracks`;
+  while (!!uri) {
+    const response = await accessSpotifyAPI<AlbumTracksRespones>(uri);
 
-    while (!!uri) {
-      const response = await accessSpotifyAPI<AlbumTracksRespones>(uri);
-
-      for (const track of response.items) {
-        const hasArtist = track.artists.some((a) => a.id === artistId);
-        if (hasArtist) newTracks.push(track.uri);
-      }
-
-      uri = response.next;
+    for (const track of response.items) {
+      const hasArtist = track.artists.some((a) => a.id === artistId);
+      if (hasArtist) newTracks.push(track.uri);
     }
+
+    uri = response.next;
   }
 
   return newTracks;
