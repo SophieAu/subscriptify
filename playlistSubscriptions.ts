@@ -29,13 +29,20 @@ export const addNewArtistsTracks = async (targetPlaylist: string) => {
   addTracks(targetPlaylist, trackURIs);
 };
 
-const playlistRequestURL = (playlistID: string, queryParams: URLSearchParams) =>
-  `https://api.spotify.com/v1/playlists/${playlistID}/tracks?${queryParams.toString()}`;
+const playlistRequestURL = (
+  playlistID: string,
+  queryParams?: URLSearchParams
+) => {
+  const base = `https://api.spotify.com/v1/playlists/${playlistID}/tracks`;
+  const params = queryParams ? `?${queryParams.toString()}` : "";
+
+  return base + params;
+};
 
 const getAllTracks = async (playlistID: string) => {
   var queryParams = new URLSearchParams();
   queryParams.append("market", "DE");
-  queryParams.append("fields", "items(added_at, track.id)");
+  queryParams.append("fields", "items(added_at, track.uri)");
 
   const uri = playlistRequestURL(playlistID, queryParams);
 
@@ -43,12 +50,20 @@ const getAllTracks = async (playlistID: string) => {
 };
 
 const addTracks = async (playlistID: string, trackURIs: string[]) => {
-  var queryParams = new URLSearchParams();
-  queryParams.append("uris", trackURIs.join(","));
+  const chunkedTracks: string[] = [];
+  const CHUNK_SIZE = 100;
+  let index = 0;
+  while (index < trackURIs.length) {
+    chunkedTracks.push(...trackURIs.slice(index, CHUNK_SIZE + index));
+    index += CHUNK_SIZE;
+  }
 
-  const uri = playlistRequestURL(playlistID, queryParams);
-
-  return await accessSpotifyAPI<SnapshotResponse>(uri, "POST");
+  const uri = playlistRequestURL(playlistID);
+  const responses: SnapshotResponse[] = [];
+  for (const tracks of chunkedTracks) {
+    await accessSpotifyAPI<SnapshotResponse>(uri, "POST", { uris: tracks });
+  }
+  return responses;
 };
 
 const getNewTracks = async (playlistID: string) => {
