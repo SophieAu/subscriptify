@@ -72,7 +72,7 @@ app.get("/callback", (req, res) => {
       headers: { Authorization: "Bearer " + access_token },
       json: true,
     };
-
+    
 
     // we can also pass the token to the browser to make requests from there
     res.redirect("/#" + querystring.stringify({ access_token, refresh_token }));
@@ -104,7 +104,7 @@ app.get("/add_subscriptions", (req, res) => {
 });
 
 app.get("/add_lists", (req, res) => {
-  addNewTracks("37i9dQZF1DX4FcAKI5Nhzq", "2a6NRXiwvTiJt57UKds76d").then((r) =>
+  addNewTracks("78d1cKN9xYtKialnOYkI92", "2a6NRXiwvTiJt57UKds76d").then((r) =>
     console.log("added new playlist tracks: ", r)
   );
 });
