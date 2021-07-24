@@ -2,14 +2,14 @@
 
 import { BEARER_TOKEN } from "./KEYS";
 
-const express = require("express"); // Express web server framework
-const request = require("request"); // "Request" library
-const cors = require("cors");
-const querystring = require("querystring");
-const cookieParser = require("cookie-parser");
-const { client_id, redirect_uri, state_key, authToken } = require("./KEYS");
-const { generateRandomString } = require("./util");
-const { addNewArtistsTracks } = require("./playlistSubscriptions");
+import express from "express"; // Express web server framework
+import request from "request"; // "Request" library
+import cors from "cors";
+import querystring from "querystring";
+import cookieParser from "cookie-parser";
+import { client_id, redirect_uri, state_key, authToken } from "./KEYS";
+import { generateRandomString } from "./util";
+import { addNewArtistsTracks } from "./playlistSubscriptions";
 
 const app = express();
 
