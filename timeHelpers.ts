@@ -5,7 +5,7 @@ const duration = {
   day: { days: 1, milliseconds: -1 },
   month: { month: 1, milliseconds: -1 },
   year: { years: 1, milliseconds: -1 },
-  seconds: { seconds: 1, milliseconds: -1 },
+  second: { seconds: 1, milliseconds: -1 },
 };
 
 export const isLessThanAWeekOld = (
