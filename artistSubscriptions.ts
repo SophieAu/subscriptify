@@ -48,7 +48,7 @@ const getNewReleasesByArtist = async (id: string) => {
 const getRelease = async (artistID: string, group: AlbumGroup) => {
   var queryParams = new URLSearchParams();
   queryParams.append("market", "DE");
-  queryParams.append("limi", "2");
+  queryParams.append("limit", "2");
   queryParams.append("include_groups", group);
 
   let uri = `https://api.spotify.com/v1/artists/${artistID}/albums?${queryParams.toString()}`;
