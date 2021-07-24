@@ -50,11 +50,11 @@ const getAllTracks = async (playlistID: string) => {
 };
 
 const addTracks = async (playlistID: string, trackURIs: string[]) => {
-  const chunkedTracks: string[] = [];
+  const chunkedTracks: string[][] = [];
   const CHUNK_SIZE = 100;
   let index = 0;
   while (index < trackURIs.length) {
-    chunkedTracks.push(...trackURIs.slice(index, CHUNK_SIZE + index));
+    chunkedTracks.push(trackURIs.slice(index, CHUNK_SIZE + index));
     index += CHUNK_SIZE;
   }
 
