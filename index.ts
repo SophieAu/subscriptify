@@ -11,6 +11,8 @@ import { client_id, redirect_uri, state_key, authToken } from "./KEYS";
 import { generateRandomString } from "./util";
 import { addNewArtistsTracks } from "./playlistSubscriptions";
 
+const ARTIST_TARGET_ID = "3Bx9orXGNyLZ4S7S0gZ8Vo";
+
 const app = express();
 
 app
@@ -100,12 +102,8 @@ app.get("/refresh_token", (req, res) => {
 });
 
 app.get("/add_subscriptions", (req, res) => {
-  // requesting access token from refresh token
-
-  console.log("toknennn: " + BEARER_TOKEN.get());
-
-  addNewArtistsTracks("3Bx9orXGNyLZ4S7S0gZ8Vo").then(() =>
-    console.log("added new tracks")
+  addNewArtistsTracks(ARTIST_TARGET_ID).then((r) =>
+    console.log("added new tracks: ", r)
   );
 });
 
