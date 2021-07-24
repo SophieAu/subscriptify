@@ -9,7 +9,7 @@ import querystring from "querystring";
 import cookieParser from "cookie-parser";
 import { client_id, redirect_uri, state_key, authToken } from "./KEYS";
 import { generateRandomString } from "./util";
-import { addNewArtistsTracks } from "./playlistSubscriptions";
+import { addNewArtistsTracks, addNewTracks } from "./playlistSubscriptions";
 
 const ARTIST_TARGET_ID = "3Bx9orXGNyLZ4S7S0gZ8Vo";
 
@@ -104,6 +104,12 @@ app.get("/refresh_token", (req, res) => {
 app.get("/add_subscriptions", (req, res) => {
   addNewArtistsTracks(ARTIST_TARGET_ID).then((r) =>
     console.log("added new tracks: ", r)
+  );
+});
+
+app.get("/add_lists", (req, res) => {
+  addNewTracks("37i9dQZF1DX4FcAKI5Nhzq", "2a6NRXiwvTiJt57UKds76d").then((r) =>
+    console.log("added new playlist tracks: ", r)
   );
 });
 
