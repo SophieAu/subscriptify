@@ -23,8 +23,6 @@ export const addNewArtistsTracks = async (targetPlaylist: string) => {
     ({ track }) => track.uri
   );
   const trackURIs = newTracks.filter((id) => !targetListTracks.includes(id));
-  console.log("adding: ");
-  console.log(trackURIs);
 
   addTracks(targetPlaylist, trackURIs);
 };
