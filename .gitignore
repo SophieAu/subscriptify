@@ -3,3 +3,6 @@ dist/
 
 // all dem secrets
 KEYS.ts
+
+// mac files
+.DS_Store
