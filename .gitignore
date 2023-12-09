@@ -6,3 +6,5 @@ KEYS.ts
 
 // mac files
 .DS_Store
+
+.env.local
