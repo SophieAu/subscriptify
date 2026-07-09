@@ -19,7 +19,7 @@ export const spotifyFetch = async <T>(token: string, url: string, init?: Request
 };
 
 export const getPlaylist = async (token: string, playlistId: string): Promise<SpotifyPlaylist> => {
-  const playlist = await spotifyFetch<RawSpotifyPlaylist>(token, playlistEndpoint(playlistId));
+  const playlist = await spotifyFetch<RawSpotifyPlaylist>(token, `${API}/playlists/${playlistId}`);
 
   // rawJson keeps the playlist metadata but never the tracklist: the embedded
   // items arrays are ~1MB, tracks are fetched separately at sync time, and that
