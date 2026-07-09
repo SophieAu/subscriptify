@@ -25,7 +25,7 @@ Copy songs from one or more **source playlists** into a single **target playlist
 2. **`/` (home)** — requires auth (client-side gate: redirect to `/login` if signed out). Shows:
    - The target playlist (read-only; seeded in the DB, no UI to change it)
    - List of source playlists with a delete button each
-   - "Add source" input: a raw Spotify playlist ID, nothing else — no search, no validation beyond "Spotify accepts it"
+   - "Add source" input: a Spotify playlist ID, an open.spotify.com link, or a `spotify:playlist:` URI — links/URIs are stripped to the bare ID server-side; no search, no validation beyond "Spotify accepts it"
    - "Sync now" button + last result message (n tracks added / error)
 
 ## Functionality
@@ -35,12 +35,13 @@ Copy songs from one or more **source playlists** into a single **target playlist
 `runSync(userId)` — a pure service function, **not** coupled to the HTTP layer, so a Deno Deploy cron can call it later:
 
 1. Load the user's subscriptions (source → target links).
-2. Fetch all track URIs from each source playlist (paginated).
-3. Fetch all track URIs currently in the target playlist.
-4. Compute `seen = current target tracks ∪ target.oldTrackIds` (historical dedupe).
-5. Add `sources − seen` to the target via Spotify API (batches of 100).
-6. Append the newly added URIs to `target.oldTrackIds`.
-7. Return `{ added: number }`.
+2. Refresh each playlist's stored metadata (`name`, `imageUrl`, `rawJson` — tracklist stripped) for the target and every source from Spotify.
+3. Fetch all track URIs from each source playlist (paginated).
+4. Fetch all track URIs currently in the target playlist.
+5. Compute `seen = current target tracks ∪ target.oldTrackIds` (historical dedupe).
+6. Add `sources − seen` to the target via Spotify API (batches of 100).
+7. Append the current target tracks **and** the newly added URIs to `target.oldTrackIds` (deduped) — so a track ever present in the target, including ones added outside subscriptify, is never re-added after it's removed.
+8. Return `{ added: number }`.
 
 ### Source management
 
@@ -60,7 +61,7 @@ Copy songs from one or more **source playlists** into a single **target playlist
 
 Note: the `subscriptions Subscription[]` fields below are Prisma **virtual back-relations** — Prisma's validator requires a field on both sides of every relation, but they create **no columns in Postgres**. The only real FK columns are `userId`/`sourceId`/`targetId` on `Subscription`; lookups are plain joins on those.
 
-Backfill-proofing: every table gets `createdAt`/`updatedAt` (impossible to reconstruct later), both playlist tables store the **raw Spotify playlist JSON** from subscribe time (any metadata we didn't think of is recoverable from it), and `Subscription` gets `lastSyncedAt` (needed for the future cron, un-backfillable).
+Backfill-proofing: every table gets `createdAt`/`updatedAt` (impossible to reconstruct later), both playlist tables store the **Spotify playlist JSON** from subscribe time — metadata only, with the tracklist stripped (it's ~1MB of dead weight, hangs the DB write, and tracks are fetched fresh at sync time anyway) so any metadata we didn't think of is still recoverable — and `Subscription` gets `lastSyncedAt` (needed for the future cron, un-backfillable).
 
 ```prisma
 model User {
@@ -76,7 +77,7 @@ model TargetPlaylist {
   spotifyId     String
   name          String
   imageUrl      String?
-  rawJson       Json?          // full Spotify playlist response at subscribe/seed time
+  rawJson       Json?          // Spotify playlist metadata at subscribe/seed time (tracklist stripped)
   oldTrackIds   String[]       @default([])  // every track URI ever added
   deletedAt     DateTime?                    // soft-delete: preserves history when re-targeting
   createdAt     DateTime       @default(now())
@@ -89,7 +90,7 @@ model SourcePlaylist {
   spotifyId     String         @unique
   name          String
   imageUrl      String?
-  rawJson       Json?          // full Spotify playlist response at subscribe time
+  rawJson       Json?          // Spotify playlist metadata at subscribe time (tracklist stripped)
   // type       SourceType     @default(PLAYLIST)  // uncomment when artist subscriptions land
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
