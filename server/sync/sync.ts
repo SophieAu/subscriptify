@@ -1,12 +1,7 @@
 import { db } from "../shared/db.ts";
-import {
-  addTracksToPlaylist,
-  getAllPlaylistTrackUris,
-  getPlaylist,
-  getSpotifyToken,
-  type SpotifyPlaylist,
-} from "../shared/spotify.ts";
+import { addTracksToPlaylist, getAllPlaylistTrackUris, getPlaylist, type SpotifyPlaylist } from "../shared/spotify.ts";
 import type { Prisma } from "../shared/generated/prisma/client.ts";
+import { getSpotifyToken } from "../shared/auth.ts";
 
 export const computeTracksToAdd = (
   sourceUris: Iterable<string>,

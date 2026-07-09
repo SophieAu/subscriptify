@@ -2,8 +2,7 @@ import { assertEquals } from "@std/assert";
 import { Hono } from "hono";
 import { validateAddSourcePlaylist } from "./routes.ts";
 
-const app = new Hono().post("/", validateAddSourcePlaylist, (c) =>
-  c.json(c.req.valid("json")));
+const app = new Hono().post("/", validateAddSourcePlaylist, (c) => c.json(c.req.valid("json")));
 
 const post = (body: unknown) =>
   app.request("/", {

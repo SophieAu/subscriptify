@@ -1,10 +1,5 @@
 import { assertEquals, assertRejects } from "@std/assert";
-import {
-  addTracksToPlaylist,
-  getAllPlaylistTrackUris,
-  getPlaylist,
-  spotifyFetch,
-} from "./spotify.ts";
+import { addTracksToPlaylist, getAllPlaylistTrackUris, getPlaylist, spotifyFetch } from "./spotify.ts";
 
 type Call = { url: string; init?: RequestInit };
 
@@ -82,12 +77,10 @@ Deno.test("getAllPlaylistTrackUris follows pagination and skips null tracks", as
   const page2 = "https://api.spotify.com/v1/playlists/pl1/tracks?offset=100";
   await withStubbedFetch(
     (call) =>
-      call.url === page2
-        ? json({ next: null, items: [{ track: { uri: "c" } }] })
-        : json({
-          next: page2,
-          items: [{ track: { uri: "a" } }, { track: null }, { track: { uri: "b" } }],
-        }),
+      call.url === page2 ? json({ next: null, items: [{ track: { uri: "c" } }] }) : json({
+        next: page2,
+        items: [{ track: { uri: "a" } }, { track: null }, { track: { uri: "b" } }],
+      }),
     async (calls) => {
       const uris = await getAllPlaylistTrackUris("token", "pl1");
       assertEquals(uris, ["a", "b", "c"]);

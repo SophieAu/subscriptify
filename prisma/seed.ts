@@ -1,6 +1,7 @@
+import { getSpotifyToken } from "../server/shared/auth.ts";
 import { db } from "../server/shared/db.ts";
 import type { Prisma } from "../server/shared/generated/prisma/client.ts";
-import { getPlaylist, getSpotifyToken } from "../server/shared/spotify.ts";
+import { getPlaylist } from "../server/shared/spotify.ts";
 
 const TARGET_PLAYLIST_SPOTIFY_ID = "4BDYS0S4CYFKAQvwaKYN40";
 

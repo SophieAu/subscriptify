@@ -2,7 +2,7 @@ import { createClerkClient } from "@clerk/backend";
 import { createMiddleware } from "hono/factory";
 import { db } from "./db.ts";
 
-export const clerk = createClerkClient({
+const clerk = createClerkClient({
   secretKey: Deno.env.get("CLERK_SECRET_KEY"),
   publishableKey: Deno.env.get("CLERK_PUBLISHABLE_KEY"),
 });
@@ -29,3 +29,11 @@ export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
   c.set("userId", user.id);
   await next();
 });
+
+export const getSpotifyToken = async (clerkUserId: string) => {
+  const tokens = await clerk.users.getUserOauthAccessToken(clerkUserId, "spotify");
+  const token = tokens.data[0]?.token;
+  if (!token) throw new Error("No Spotify token on the Clerk user");
+
+  return token;
+};

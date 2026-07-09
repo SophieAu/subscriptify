@@ -1,15 +1,8 @@
 import type { Context } from "hono";
 import { validator } from "hono/validator";
-import type { AuthEnv } from "../shared/auth.ts";
-import { getSpotifyToken } from "../shared/spotify.ts";
+import { type AuthEnv, getSpotifyToken } from "../shared/auth.ts";
 import type { ValidatorInput } from "../shared/validation.ts";
-import {
-  addSource,
-  getActiveTarget,
-  getLastSyncedAt,
-  listSources,
-  removeSource,
-} from "./subscriptions.ts";
+import { addSource, getActiveTarget, getLastSyncedAt, listSources, removeSource } from "./subscriptions.ts";
 
 // Accepts a bare playlist id, an open.spotify.com link (with optional
 // /intl-xx/ locale prefix and ?si=… query), or a spotify:playlist: URI,

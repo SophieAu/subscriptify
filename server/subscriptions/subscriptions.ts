@@ -2,14 +2,12 @@ import { db } from "../shared/db.ts";
 import type { Prisma } from "../shared/generated/prisma/client.ts";
 import { getPlaylist } from "../shared/spotify.ts";
 
-
 type SubscriptionContext = {
   userId: string;
   spotifyToken: string;
 };
 
-export const getActiveTarget = () =>
-  db.targetPlaylist.findFirst({ where: { deletedAt: null } });
+export const getActiveTarget = () => db.targetPlaylist.findFirst({ where: { deletedAt: null } });
 
 export const listSources = async (userId: string) => {
   const subscriptions = await db.subscription.findMany({
