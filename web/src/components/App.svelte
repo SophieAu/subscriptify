@@ -7,6 +7,7 @@
   let newSourceId = $state("");
   let busy = $state(false);
   let message = $state("");
+  let lastSyncedAt = $state(null);
   let started = false;
 
   const api = async (path, init = {}) => {
@@ -27,6 +28,7 @@
     const data = await api("/sources");
     target = data.target;
     sources = data.sources;
+    lastSyncedAt = data.lastSyncedAt;
   };
 
   $effect(() => {
@@ -74,6 +76,7 @@
     message = "Syncing…";
     try {
       const { added } = await api("/sync", { method: "POST" });
+      await refresh();
       message = `Added ${added} track${added === 1 ? "" : "s"}`;
     } catch (err) {
       message = `Sync failed: ${err.message}`;
@@ -130,6 +133,9 @@
 
     <section>
       <button onclick={sync} disabled={busy}>Sync now</button>
+      <p class="last-synced">
+        {lastSyncedAt ? `Last synced ${new Date(lastSyncedAt).toLocaleString()}` : "Never synced"}
+      </p>
       {#if message}<p>{message}</p>{/if}
     </section>
   </main>
@@ -141,6 +147,12 @@
     margin: 2rem auto;
     padding: 0 1rem;
     font-family: system-ui, sans-serif;
+  }
+
+  .last-synced {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0.25rem 0 0;
   }
 
   .playlist {

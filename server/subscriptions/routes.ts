@@ -3,7 +3,13 @@ import { validator } from "hono/validator";
 import type { AuthEnv } from "../shared/auth.ts";
 import { getSpotifyToken } from "../shared/spotify.ts";
 import type { ValidatorInput } from "../shared/validation.ts";
-import { addSource, getActiveTarget, listSources, removeSource } from "./subscriptions.ts";
+import {
+  addSource,
+  getActiveTarget,
+  getLastSyncedAt,
+  listSources,
+  removeSource,
+} from "./subscriptions.ts";
 
 export const validateAddSourcePlaylist = validator("json", (body: Record<string, unknown>, c) => {
   const spotifyId = typeof body.spotifyId === "string" ? body.spotifyId.trim() : "";
@@ -12,9 +18,10 @@ export const validateAddSourcePlaylist = validator("json", (body: Record<string,
 });
 
 export const getSourcePlaylist = async (c: Context<AuthEnv>) => {
-  const [target, sources] = await Promise.all([
+  const [target, sources, lastSyncedAt] = await Promise.all([
     getActiveTarget(),
     listSources(c.get("userId")),
+    getLastSyncedAt(c.get("userId")),
   ]);
   return c.json({
     target: target && {
@@ -23,6 +30,7 @@ export const getSourcePlaylist = async (c: Context<AuthEnv>) => {
       imageUrl: target.imageUrl,
     },
     sources,
+    lastSyncedAt,
   });
 };
 

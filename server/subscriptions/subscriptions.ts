@@ -26,6 +26,15 @@ export const listSources = async (userId: string) => {
   }));
 };
 
+export const getLastSyncedAt = async (userId: string) => {
+  const mostRecentlySynced = await db.subscription.findFirst({
+    where: { userId, lastSyncedAt: { not: null } },
+    orderBy: { lastSyncedAt: "desc" },
+    select: { lastSyncedAt: true },
+  });
+  return mostRecentlySynced?.lastSyncedAt ?? null;
+};
+
 const addNewSubscription = async (
   context: SubscriptionContext,
   sourcePlaylistSpotifyId: string,
