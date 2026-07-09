@@ -4,6 +4,7 @@
     "jsr:@std/assert@^1.0.19": "1.0.19",
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "npm:@clerk/backend@3": "3.11.0_react@19.2.7_react-dom@19.2.7__react@19.2.7",
+    "npm:@neondatabase/serverless@1.1.0": "1.1.0",
     "npm:@prisma/adapter-neon@7": "7.8.0",
     "npm:@prisma/client@7": "7.8.0_prisma@7.8.0__@types+react@19.2.17__react@19.2.7__react-dom@19.2.7___react@19.2.7_@types+react@19.2.17_react@19.2.7_react-dom@19.2.7__react@19.2.7",
     "npm:hono@^4.12.0": "4.12.28",
@@ -624,6 +625,7 @@
     "dependencies": [
       "jsr:@std/assert@^1.0.19",
       "npm:@clerk/backend@3",
+      "npm:@neondatabase/serverless@1.1.0",
       "npm:@prisma/adapter-neon@7",
       "npm:@prisma/client@7",
       "npm:hono@^4.12.0",

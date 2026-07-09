@@ -18,6 +18,7 @@
     "@clerk/backend": "npm:@clerk/backend@^3",
     "@prisma/client": "npm:@prisma/client@^7",
     "@prisma/adapter-neon": "npm:@prisma/adapter-neon@^7",
+    "@neondatabase/serverless": "npm:@neondatabase/serverless@1.1.0",
     "prisma": "npm:prisma@^7"
   }
 }
