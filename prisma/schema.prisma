@@ -18,7 +18,7 @@ model User {
 
 model TargetPlaylist {
   id            String         @id @default(cuid())
-  spotifyId     String
+  spotifyId     String         @unique
   name          String
   imageUrl      String?
   rawJson       Json?          // Spotify playlist metadata at subscribe/seed time (tracklist stripped)
