@@ -14,24 +14,27 @@ const app = new Hono();
 
 app.use(logger());
 
-app.route("/api/sources", new Hono<AuthEnv>()
-  .use(requireAuth)
-  .get("/", getSourcePlaylist)
-  .post("/", validateAddSourcePlaylist, addSourcePlaylist)
-  .delete("/:id", removeSourcePlaylist));
+app.route(
+  "/api/sources",
+  new Hono<AuthEnv>()
+    .use(requireAuth)
+    .get("/", getSourcePlaylist)
+    .post("/", validateAddSourcePlaylist, addSourcePlaylist)
+    .delete("/:id", removeSourcePlaylist),
+);
 
-app.route("/api/sync", new Hono<AuthEnv>()
-  .use(requireAuth)
-  .post("/", async (c) => c.json(await runSync(c.get("userId")))));
+app.route(
+  "/api/sync",
+  new Hono<AuthEnv>()
+    .use(requireAuth)
+    .post("/", async (c) => c.json(await runSync(c.get("userId")))),
+);
+
+app.use("*", serveStatic({ root: "./web/dist" }));
 
 app.onError((err, c) => {
   console.error(err);
   return c.json({ error: err.message }, 500);
 });
-
-// Astro's static build (build.format "file" → /sign-in maps to sign-in.html)
-app.get("/sign-in", serveStatic({ path: "./web/dist/sign-in.html" }));
-app.get("/sign-up", serveStatic({ path: "./web/dist/sign-up.html" }));
-app.use("*", serveStatic({ root: "./web/dist" }));
 
 Deno.serve(app.fetch);
