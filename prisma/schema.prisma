@@ -21,7 +21,7 @@ model TargetPlaylist {
   spotifyId     String
   name          String
   imageUrl      String?
-  rawJson       Json?          // full Spotify playlist response at subscribe/seed time
+  rawJson       Json?          // Spotify playlist metadata at subscribe/seed time (tracklist stripped)
   oldTrackIds   String[]       @default([])  // every track URI ever added
   deletedAt     DateTime?                    // soft-delete: preserves history when re-targeting
   createdAt     DateTime       @default(now())
@@ -34,7 +34,7 @@ model SourcePlaylist {
   spotifyId     String         @unique
   name          String
   imageUrl      String?
-  rawJson       Json?          // full Spotify playlist response at subscribe time
+  rawJson       Json?          // Spotify playlist metadata at subscribe time (tracklist stripped)
   // type       SourceType     @default(PLAYLIST)  // uncomment when artist subscriptions land
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt

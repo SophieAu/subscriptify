@@ -2,6 +2,7 @@ import { assertEquals, assertRejects } from "@std/assert";
 import {
   addTracksToPlaylist,
   getAllPlaylistTrackUris,
+  getPlaylist,
   spotifyFetch,
 } from "./spotify.ts";
 
@@ -52,6 +53,27 @@ Deno.test("spotifyFetch throws on non-OK responses", async () => {
         Error,
         "Spotify 403",
       );
+    },
+  );
+});
+
+Deno.test("getPlaylist strips the tracklist but keeps metadata", async () => {
+  await withStubbedFetch(
+    () =>
+      json({
+        id: "pl1",
+        name: "My Playlist",
+        images: [{ url: "http://img" }],
+        items: [{ track: { uri: "x" } }],
+        tracks: { total: 2, items: [{ track: { uri: "x" } }, { track: { uri: "y" } }] },
+      }),
+    async () => {
+      const playlist = await getPlaylist("token", "pl1") as Record<string, unknown>;
+      assertEquals(playlist.name, "My Playlist");
+      assertEquals(playlist.items, undefined);
+      const tracks = playlist.tracks as Record<string, unknown>;
+      assertEquals(tracks.items, undefined);
+      assertEquals(tracks.total, 2);
     },
   );
 });

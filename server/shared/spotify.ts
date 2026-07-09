@@ -32,8 +32,20 @@ export const spotifyFetch = async <T>(
   return await res.json();
 };
 
-export const getPlaylist = (token: string, playlistId: string) =>
-  spotifyFetch<SpotifyPlaylist>(token, `${API}/playlists/${playlistId}`);
+export const getPlaylist = async (token: string, playlistId: string): Promise<SpotifyPlaylist> => {
+  const playlist = await spotifyFetch<SpotifyPlaylist & {
+    items?: unknown;
+    tracks?: { items?: unknown };
+  }>(token, `${API}/playlists/${playlistId}`);
+
+  // rawJson keeps the playlist metadata but never the tracklist: the embedded
+  // items arrays are ~1MB, tracks are fetched separately at sync time, and that
+  // oversized write is what hangs the Neon connection.
+  delete playlist.items;
+  if (playlist.tracks) delete playlist.tracks.items;
+
+  return playlist;
+};
 
 export const getAllPlaylistTrackUris = async (token: string, playlistId: string) => {
   const uris: string[] = [];
