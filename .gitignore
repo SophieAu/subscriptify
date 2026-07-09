@@ -3,8 +3,13 @@ dist/
 
 // all dem secrets
 KEYS.ts
+.env
+.env.local
+
+// generated
+server/shared/generated/
+web/.astro/
 
 // mac files
 .DS_Store
-
-.env.local
+.fallow/

@@ -1,0 +1,25 @@
+---
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Subscriptify — Login</title>
+  </head>
+  <body>
+    <p>Redirecting to sign-in…</p>
+    <script>
+      import { $authStore, $clerkStore } from "@clerk/astro/client";
+
+      $authStore.subscribe(({ userId }) => {
+        if (userId === undefined) return; // Clerk still loading
+        if (userId) {
+          location.replace("/");
+        } else {
+          $clerkStore.get()?.redirectToSignIn({ redirectUrl: "/" });
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../server/shared/generated/prisma"
+  runtime  = "deno"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String         @id @default(cuid())
+  clerkId       String         @unique
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
+}
+
+model TargetPlaylist {
+  id            String         @id @default(cuid())
+  spotifyId     String
+  name          String
+  imageUrl      String?
+  rawJson       Json?          // full Spotify playlist response at subscribe/seed time
+  oldTrackIds   String[]       @default([])  // every track URI ever added
+  deletedAt     DateTime?                    // soft-delete: preserves history when re-targeting
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
+}
+
+model SourcePlaylist {
+  id            String         @id @default(cuid())
+  spotifyId     String         @unique
+  name          String
+  imageUrl      String?
+  rawJson       Json?          // full Spotify playlist response at subscribe time
+  // type       SourceType     @default(PLAYLIST)  // uncomment when artist subscriptions land
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
+}
+
+// enum SourceType {  // uncomment when artist subscriptions land
+//   PLAYLIST
+//   ARTIST
+// }
+
+model Subscription {
+  id           String         @id @default(cuid())
+  user         User           @relation(fields: [userId], references: [id])
+  userId       String
+  source       SourcePlaylist @relation(fields: [sourceId], references: [id])
+  sourceId     String
+  target       TargetPlaylist @relation(fields: [targetId], references: [id])
+  targetId     String
+  lastSyncedAt DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@unique([userId, sourceId, targetId])
+}
