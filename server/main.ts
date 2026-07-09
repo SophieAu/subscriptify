@@ -28,6 +28,8 @@ app.onError((err, c) => {
 
 // Astro's static build (build.format "file" → /login maps to login.html)
 app.get("/login", serveStatic({ path: "./web/dist/login.html" }));
+app.get("/sign-in", serveStatic({ path: "./web/dist/sign-in.html" }));
+app.get("/sign-up", serveStatic({ path: "./web/dist/sign-up.html" }));
 app.use("*", serveStatic({ root: "./web/dist" }));
 
 Deno.serve(app.fetch);
