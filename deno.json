@@ -11,6 +11,10 @@
     "check": "deno check server/main.ts prisma/seed.ts",
     "test": "deno test --env-file=.env.test --allow-env server/"
   },
+  "fmt": {
+    "lineWidth": 120,
+    "proseWrap": "preserve"
+  },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.19",
     "hono": "npm:hono@^4.12.0",
