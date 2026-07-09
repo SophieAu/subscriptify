@@ -5,6 +5,7 @@
     "dev": "deno run -A --env-file=.env.local --watch server/main.ts",
     "dev:web": "cd web && deno run -A npm:astro dev",
     "build:web": "cd web && deno install && deno run -A npm:astro build",
+    "build:deploy": "deno task db:generate && deno task build:web",
     "db:generate": "deno run -A npm:prisma generate",
     "db:push": "deno run -A --env-file=.env.local npm:prisma db push",
     "db:seed": "deno run -A --env-file=.env.local prisma/seed.ts",
