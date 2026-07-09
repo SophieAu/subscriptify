@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/deno";
+import { logger } from "hono/logger";
 import { type AuthEnv, requireAuth } from "./shared/auth.ts";
 import {
   addSourcePlaylist,
@@ -10,6 +11,8 @@ import {
 import { runSync } from "./sync/sync.ts";
 
 const app = new Hono();
+
+app.use(logger());
 
 app.route("/api/sources", new Hono<AuthEnv>()
   .use(requireAuth)
