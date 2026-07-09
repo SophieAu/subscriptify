@@ -11,10 +11,23 @@ import {
   removeSource,
 } from "./subscriptions.ts";
 
+// Accepts a bare playlist id, an open.spotify.com link (with optional
+// /intl-xx/ locale prefix and ?si=… query), or a spotify:playlist: URI,
+// and returns just the id.
+const extractSpotifyPlaylistId = (rawSpotifyInput: string): string => {
+  const uriMatch = rawSpotifyInput.match(/spotify:playlist:([A-Za-z0-9]+)/);
+  if (uriMatch) return uriMatch[1];
+
+  const urlMatch = rawSpotifyInput.match(/\/playlist\/([A-Za-z0-9]+)/);
+  if (urlMatch) return urlMatch[1];
+
+  return rawSpotifyInput;
+};
+
 export const validateAddSourcePlaylist = validator("json", (body: Record<string, unknown>, c) => {
-  const spotifyId = typeof body.spotifyId === "string" ? body.spotifyId.trim() : "";
-  if (!spotifyId) return c.json({ error: "spotifyId is required" }, 400);
-  return { spotifyId };
+  const rawSpotifyInput = typeof body.spotifyId === "string" ? body.spotifyId.trim() : "";
+  if (!rawSpotifyInput) return c.json({ error: "spotifyId is required" }, 400);
+  return { spotifyId: extractSpotifyPlaylistId(rawSpotifyInput) };
 });
 
 export const getSourcePlaylist = async (c: Context<AuthEnv>) => {

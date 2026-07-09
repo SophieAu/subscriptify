@@ -33,3 +33,25 @@ Deno.test("validateAddSourcePlaylist trims and passes a valid spotifyId through"
   assertEquals(res.status, 200);
   assertEquals(await res.json(), { spotifyId: "37i9dQZF1DX4jP4eebSWR9" });
 });
+
+Deno.test("validateAddSourcePlaylist strips a full open.spotify.com link", async () => {
+  const res = await post({
+    spotifyId: "https://open.spotify.com/playlist/28oY1vSsipRE5VOyLDQqed?si=566eec2711aa4a0a",
+  });
+  assertEquals(res.status, 200);
+  assertEquals(await res.json(), { spotifyId: "28oY1vSsipRE5VOyLDQqed" });
+});
+
+Deno.test("validateAddSourcePlaylist strips a link with an /intl-xx/ locale prefix", async () => {
+  const res = await post({
+    spotifyId: "https://open.spotify.com/intl-de/playlist/28oY1vSsipRE5VOyLDQqed",
+  });
+  assertEquals(res.status, 200);
+  assertEquals(await res.json(), { spotifyId: "28oY1vSsipRE5VOyLDQqed" });
+});
+
+Deno.test("validateAddSourcePlaylist strips a spotify:playlist: URI", async () => {
+  const res = await post({ spotifyId: "spotify:playlist:28oY1vSsipRE5VOyLDQqed" });
+  assertEquals(res.status, 200);
+  assertEquals(await res.json(), { spotifyId: "28oY1vSsipRE5VOyLDQqed" });
+});
