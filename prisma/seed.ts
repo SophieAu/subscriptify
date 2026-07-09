@@ -12,27 +12,30 @@ if (!user) {
 }
 
 const token = await getSpotifyToken(user.clerkId);
-const playlist = await getPlaylist(token, spotifyId);
-const data = {
+const targetPlaylist = await getPlaylist(token, spotifyId);
+const targetPlaylistData = {
   spotifyId,
-  name: playlist.name,
-  imageUrl: playlist.images?.[0]?.url ?? null,
-  rawJson: playlist as unknown as Prisma.InputJsonValue,
+  name: targetPlaylist.name,
+  imageUrl: targetPlaylist.images?.[0]?.url ?? null,
+  rawJson: targetPlaylist as unknown as Prisma.InputJsonValue,
 };
 
-const active = await db.targetPlaylist.findFirst({ where: { deletedAt: null } });
+const currentlyActiveTargetPlaylist = await db.targetPlaylist.findFirst({ where: { deletedAt: null } });
 
-if (active && active.spotifyId === spotifyId) {
-  await db.targetPlaylist.update({ where: { id: active.id }, data });
-  console.log(`Refreshed target playlist: ${playlist.name} (${spotifyId})`);
+if (!currentlyActiveTargetPlaylist) {
+  await db.targetPlaylist.create({ data: targetPlaylistData });
+  console.log(`Seeded target playlist: ${targetPlaylist.name} (${spotifyId})`);
 } else {
-  if (active) {
-    await db.targetPlaylist.update({
-      where: { id: active.id },
-      data: { deletedAt: new Date() },
-    });
-    console.log(`Re-targeting: soft-deleted previous target ${active.name} (${active.spotifyId})`);
+  if (currentlyActiveTargetPlaylist.spotifyId !== spotifyId) {
+    await db.targetPlaylist.update({ where: { id: currentlyActiveTargetPlaylist.id }, data: { deletedAt: new Date() } });
+    console.log(`Re-targeting: soft-deleted previous target ${currentlyActiveTargetPlaylist.name} (${currentlyActiveTargetPlaylist.spotifyId})`);
+
+    await db.targetPlaylist.create({ data: targetPlaylistData });
+    console.log(`Seeded target playlist: ${targetPlaylist.name} (${spotifyId})`);
   }
-  await db.targetPlaylist.create({ data });
-  console.log(`Seeded target playlist: ${playlist.name} (${spotifyId})`);
+
+  else {
+    await db.targetPlaylist.update({ where: { id: currentlyActiveTargetPlaylist.id }, data: targetPlaylistData });
+    console.log(`Refreshed target playlist: ${targetPlaylist.name} (${spotifyId})`);
+  }
 }

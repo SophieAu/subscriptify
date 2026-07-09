@@ -14,7 +14,6 @@ export const computeTracksToAdd = (
   return [...new Set(sourceUris)].filter((uri) => !seen.has(uri));
 };
 
-// Standalone on purpose: the future Deno cron calls this directly, no HTTP involved.
 export const runSync = async (userId: string) => {
   const user = await db.user.findUniqueOrThrow({ where: { id: userId } });
   const token = await getSpotifyToken(user.clerkId);
