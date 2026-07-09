@@ -17,12 +17,12 @@ Copy songs from one or more **source playlists** into a single **target playlist
 - Users sign in through Clerk using the Spotify social connection (scopes: `playlist-read-private`, `playlist-modify-public`, `playlist-modify-private`).
 - The API verifies the Clerk session token on every `/api/*` request (`@clerk/backend`).
 - To call the Spotify API, the backend fetches the user's Spotify access token from Clerk (`users.getUserOauthAccessToken(userId, 'spotify')`) — Clerk stores and refreshes it; no tokens in our DB.
-- `/login` uses Clerk's hosted Account Portal (redirect); no custom login UI.
+- `/sign-in` and `/sign-up` render Clerk's `<SignIn>` / `<SignUp>` components on our own domain; no hosted Account Portal.
 
-## Pages (2)
+## Pages (3)
 
-1. **`/login`** — redirects to Clerk's hosted sign-in. Signed-in users are redirected to `/`.
-2. **`/` (home)** — requires auth (client-side gate: redirect to `/login` if signed out). Shows:
+1. **`/sign-in`** (and **`/sign-up`**) — Clerk's self-hosted sign-in/sign-up UI.
+2. **`/` (home)** — requires auth (client-side gate: redirect to `/sign-in` if signed out). Shows:
    - The target playlist (read-only; seeded in the DB, no UI to change it)
    - List of source playlists with a delete button each
    - "Add source" input: a Spotify playlist ID, an open.spotify.com link, or a `spotify:playlist:` URI — links/URIs are stripped to the bare ID server-side; no search, no validation beyond "Spotify accepts it"
@@ -145,7 +145,8 @@ prisma/
   seed.ts               # hydrates the hardcoded target id from the Spotify API
 web/                    # Astro project (static output)
   src/pages/index.astro
-  src/pages/login.astro
+  src/pages/sign-in.astro
+  src/pages/sign-up.astro
   src/components/*.svelte
 ```
 

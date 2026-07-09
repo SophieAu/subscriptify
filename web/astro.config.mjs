@@ -1,14 +1,13 @@
-import clerk from "@clerk/astro";
 import svelte from "@astrojs/svelte";
+import clerk from "@clerk/astro";
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
   integrations: [clerk(), svelte()],
-  // /login → dist/login.html, served by the Hono app
+  // /sign-in → dist/sign-in.html, served by the Hono app
   build: { format: "file" },
   vite: {
-    // single .env.local at the repo root; only PUBLIC_* vars are exposed
-    envDir: "..",
+    envDir: "..", // single .env.local at the repo root; only PUBLIC_* vars are exposed
     server: {
       proxy: { "/api": "http://localhost:8000" },
     },

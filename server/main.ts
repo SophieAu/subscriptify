@@ -29,8 +29,7 @@ app.onError((err, c) => {
   return c.json({ error: err.message }, 500);
 });
 
-// Astro's static build (build.format "file" → /login maps to login.html)
-app.get("/login", serveStatic({ path: "./web/dist/login.html" }));
+// Astro's static build (build.format "file" → /sign-in maps to sign-in.html)
 app.get("/sign-in", serveStatic({ path: "./web/dist/sign-in.html" }));
 app.get("/sign-up", serveStatic({ path: "./web/dist/sign-up.html" }));
 app.use("*", serveStatic({ root: "./web/dist" }));

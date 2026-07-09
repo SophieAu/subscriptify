@@ -35,7 +35,7 @@
     const userId = $auth.userId;
     if (userId === undefined || started) return; // Clerk still loading
     if (userId === null) {
-      location.replace("/login");
+      location.replace("/sign-in");
       return;
     }
     started = true;
