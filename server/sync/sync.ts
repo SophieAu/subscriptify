@@ -5,7 +5,8 @@ import {
   getSubscriptionsForUser,
   logSongsAsSeen,
   logSubscriptionsAsSynced,
-  refreshPlaylistInfo,
+  refreshSourcePlaylistInfo,
+  refreshTargetPlaylistInfo,
 } from "./toMoveOut.ts";
 
 export const getGenuinelyNewSongs = (
@@ -36,12 +37,12 @@ export const runSync = async (userId: string) => {
   if (subscriptions.length === 0) return { added: 0 };
 
   const { spotifyId: targetPlaylistSpotifyId, oldTrackIds } = subscriptions[0].target;
-  await refreshPlaylistInfo(token, targetPlaylistSpotifyId);
+  await refreshTargetPlaylistInfo(token, targetPlaylistSpotifyId);
   const tracksCurrentlyInTarget = await getSongsForPlaylist(token, targetPlaylistSpotifyId);
 
   const potentiallyNewSongs = new Set<string>();
   for (const { source } of subscriptions) {
-    await refreshPlaylistInfo(token, source.spotifyId);
+    await refreshSourcePlaylistInfo(token, source.spotifyId);
 
     for (const uri of await getSongsForPlaylist(token, source.spotifyId)) {
       potentiallyNewSongs.add(uri);

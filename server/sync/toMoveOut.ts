@@ -20,8 +20,15 @@ export const getSubscriptionsForUser = async (userId: string) =>
     include: { source: true, target: true },
   });
 
-export const refreshPlaylistInfo = async (token: string, spotifyId: string) => {
+export const refreshSourcePlaylistInfo = async (token: string, spotifyId: string) => {
   await db.sourcePlaylist.update({
+    where: { spotifyId },
+    data: playlistMetadataFields(await getPlaylist(token, spotifyId)),
+  });
+};
+
+export const refreshTargetPlaylistInfo = async (token: string, spotifyId: string) => {
+  await db.targetPlaylist.update({
     where: { spotifyId },
     data: playlistMetadataFields(await getPlaylist(token, spotifyId)),
   });
