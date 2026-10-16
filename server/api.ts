@@ -1,8 +1,8 @@
 import type { Context, MiddlewareHandler } from "hono";
 import { validator } from "hono/validator";
-import { type AuthEnv, getSpotifyToken } from "../adapters/auth.ts";
-import { addSource, getActiveTarget, getLastSyncedAt, listSources, removeSource } from "./subscriptions.ts";
-import { runSync } from "../sync/sync.ts";
+import { type AuthEnv, getSpotifyToken } from "./adapters/auth.ts";
+import { addSource, getActiveTarget, getLastSyncedAt, listSources, removeSource } from "./subscriptions/subscriptions.ts";
+import { runSync } from "./sync/sync.ts";
 
 // Extracts the input type a validator middleware produces, so a handler's
 // Context stays in sync with the validator instead of duplicating the shape.

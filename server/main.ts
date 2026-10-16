@@ -8,7 +8,7 @@ import {
   removeSourcePlaylist,
   sync,
   validateAddSourcePlaylist,
-} from "./subscriptions/routes.ts";
+} from "./api.ts";
 
 const app = new Hono();
 
