@@ -1,10 +1,11 @@
 import { createClerkClient } from "@clerk/backend";
 import { createMiddleware } from "hono/factory";
 import { db } from "./db.ts";
+import { env } from "../env.ts";
 
 const clerk = createClerkClient({
-  secretKey: Deno.env.get("CLERK_SECRET_KEY"),
-  publishableKey: Deno.env.get("CLERK_PUBLISHABLE_KEY"),
+  secretKey: env.CLERK_SECRET_KEY,
+  publishableKey: env.CLERK_PUBLISHABLE_KEY,
 });
 
 export type AuthEnv = {
