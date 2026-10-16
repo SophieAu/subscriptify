@@ -2,6 +2,7 @@ import type { Context, MiddlewareHandler } from "hono";
 import { validator } from "hono/validator";
 import { type AuthEnv, getSpotifyToken } from "../adapters/auth.ts";
 import { addSource, getActiveTarget, getLastSyncedAt, listSources, removeSource } from "./subscriptions.ts";
+import { runSync } from "../sync/sync.ts";
 
 // Extracts the input type a validator middleware produces, so a handler's
 // Context stays in sync with the validator instead of duplicating the shape.
@@ -27,7 +28,7 @@ export const validateAddSourcePlaylist = validator("json", (body: Record<string,
   return { spotifyId: extractSpotifyPlaylistId(rawSpotifyInput) };
 });
 
-// GET /
+// GET /api/sources
 export const getSourcePlaylist = async (c: Context<AuthEnv>) => {
   const [target, sources, lastSyncedAt] = await Promise.all([
     getActiveTarget(),
@@ -46,7 +47,7 @@ export const getSourcePlaylist = async (c: Context<AuthEnv>) => {
   });
 };
 
-// POST /
+// POST /api/sources
 export const addSourcePlaylist = async (
   c: Context<AuthEnv, "/", ValidatorInput<typeof validateAddSourcePlaylist>>,
 ) => {
@@ -58,9 +59,14 @@ export const addSourcePlaylist = async (
   return c.json(source, 201);
 };
 
-// DELETE /
+// DELETE /api/sources
 export const removeSourcePlaylist = async (c: Context<AuthEnv, "/:id">) => {
   await removeSource(c.get("userId"), c.req.param("id"));
 
   return c.json({ ok: true });
+};
+
+// GET /api/sync
+export const sync = async (userId: string) => {
+  await runSync(userId);
 };

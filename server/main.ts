@@ -6,9 +6,9 @@ import {
   addSourcePlaylist,
   getSourcePlaylist,
   removeSourcePlaylist,
+  sync,
   validateAddSourcePlaylist,
 } from "./subscriptions/routes.ts";
-import { runSync } from "./sync/sync.ts";
 
 const app = new Hono();
 
@@ -27,7 +27,7 @@ app.route(
   "/api/sync",
   new Hono<AuthEnv>()
     .use(requireAuth)
-    .post("/", async (c) => c.json(await runSync(c.get("userId")))),
+    .post("/", async (c) => c.json(await sync(c.get("userId")))),
 );
 
 app.use("*", serveStatic({ root: "./web/dist" }));
