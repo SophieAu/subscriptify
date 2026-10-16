@@ -6,8 +6,8 @@ import {
   getLastSyncedAt,
   listSources,
   removeSource,
-} from "./subscriptions/subscriptions.ts";
-import { runSync } from "./sync/sync.ts";
+} from "./core/subscriptions.ts";
+import { runSync } from "./core/sync.ts";
 import { validateAddSourcePlaylist, ValidatorInput } from "./middleware.ts";
 
 // GET /api/sources
