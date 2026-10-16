@@ -37,7 +37,7 @@ export const runSync = async (userId: string) => {
   // 1. get subscriptions
   const subscriptions = await getSubscriptionsForUser(userId);
   if (subscriptions.length === 0) return { added: 0 };
-  logger.info({ subscriptions: subscriptions.length });
+  logger.info(`subscribed to '${subscriptions.length} playlists`);
 
   // 2. refresh targetplaylist (since it could have changed since last sync with db)
   const { spotifyId: targetPlaylistSpotifyId, oldTrackIds } = subscriptions[0].target;
@@ -63,15 +63,17 @@ export const runSync = async (userId: string) => {
   const toAddToSpotify = getGenuinelyNewSongs(potentiallyNewSongs, tracksCurrentlyInTarget, oldTrackIds);
   if (toAddToSpotify.length > 0) {
     await addSongsToPlaylist(token, targetPlaylistSpotifyId, toAddToSpotify);
+    logger.info("No new songs to add to Spotify");
   }
-  logger.info("New songs added");
+  logger.info(`${toAddToSpotify.length} new songs added to Spotify`);
 
   // 5. log new songs to db
   const newlySeen = getSongsNotLoggedInDB(tracksCurrentlyInTarget, toAddToSpotify, oldTrackIds);
   if (newlySeen.length > 0) {
     await logSongsAsSeen(targetPlaylistSpotifyId, newlySeen);
+    logger.info("No new songs to log to the database");
   }
-  logger.info("New songs added");
+  logger.info(`${newlySeen.length} new songs logged to the database`);
 
   await logSubscriptionsAsSynced(subscriptions);
   return { added: toAddToSpotify.length };
