@@ -1,3 +1,4 @@
+import { logger } from "../adapters/logging.ts";
 import {
   addSongsToPlaylist,
   getSongsForPlaylist,
@@ -33,31 +34,42 @@ export const getSongsNotLoggedInDB = (
 export const runSync = async (userId: string) => {
   const token = await getSpotifyTokenForUser(userId);
 
+  // 1. get subscriptions
   const subscriptions = await getSubscriptionsForUser(userId);
   if (subscriptions.length === 0) return { added: 0 };
+  logger.info({ subscriptions: subscriptions.length });
 
+  // 2. refresh targetplaylist (since it could have changed since last sync with db)
   const { spotifyId: targetPlaylistSpotifyId, oldTrackIds } = subscriptions[0].target;
   await refreshTargetPlaylistInfo(token, targetPlaylistSpotifyId);
   const tracksCurrentlyInTarget = await getSongsForPlaylist(token, targetPlaylistSpotifyId);
+  logger.info("target playlist updated");
 
+  // 3. get all new songs for all subscribed playlists
   const potentiallyNewSongs = new Set<string>();
   for (const { source } of subscriptions) {
     await refreshSourcePlaylistInfo(token, source.spotifyId);
+    logger.info(`source playlist '${source.name} updated`);
 
     for (const uri of await getSongsForPlaylist(token, source.spotifyId)) {
       potentiallyNewSongs.add(uri);
     }
+    logger.info(`songs for '${source.name} extracted`);
   }
 
+  // 4. add songs to target list
   const toAddToSpotify = getGenuinelyNewSongs(potentiallyNewSongs, tracksCurrentlyInTarget, oldTrackIds);
   if (toAddToSpotify.length > 0) {
     await addSongsToPlaylist(token, targetPlaylistSpotifyId, toAddToSpotify);
   }
+  logger.info({ newSongCount: toAddToSpotify.length });
 
+  // 5. log new songs to db
   const newlySeen = getSongsNotLoggedInDB(tracksCurrentlyInTarget, toAddToSpotify, oldTrackIds);
   if (newlySeen.length > 0) {
     await logSongsAsSeen(targetPlaylistSpotifyId, newlySeen);
   }
+  logger.info("New songs added");
 
   await logSubscriptionsAsSynced(subscriptions);
   return { added: toAddToSpotify.length };
