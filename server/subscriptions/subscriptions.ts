@@ -1,5 +1,5 @@
 import { db } from "../adapters/db.ts";
-import type { Prisma } from "../shared/generated/prisma/client.ts";
+import type { Prisma } from "../adapters/generated/prisma/client.ts";
 import { getPlaylist } from "../adapters/spotify.ts";
 
 type SubscriptionContext = {

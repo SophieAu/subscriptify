@@ -1,6 +1,6 @@
 import { getSpotifyToken } from "../adapters/auth.ts";
 import { db } from "../adapters/db.ts";
-import { Prisma, Subscription } from "../shared/generated/prisma/client.ts";
+import { Prisma, Subscription } from "../adapters/generated/prisma/client.ts";
 import { addTracksToPlaylist, getAllPlaylistTrackUris, getPlaylist, SpotifyPlaylist } from "../adapters/spotify.ts";
 
 export const playlistMetadataFields = (spotifyPlaylist: SpotifyPlaylist) => ({
