@@ -1,13 +1,12 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/deno";
-import { logger } from "hono/logger";
-import { type AuthEnv, requireAuth } from "./middleware.ts";
+import { type AuthEnv, logging, requireAuth } from "./middleware.ts";
 import { addSourcePlaylist, getSourcePlaylist, removeSourcePlaylist, sync } from "./api.ts";
 import { validateAddSourcePlaylist } from "./middleware.ts";
 
 const app = new Hono();
 
-app.use(logger());
+app.use(logging);
 
 app.route(
   "/api/sources",

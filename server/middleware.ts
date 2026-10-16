@@ -2,6 +2,7 @@ import type { MiddlewareHandler } from "hono";
 import { validator } from "hono/validator";
 import { createMiddleware } from "hono/factory";
 import { authenticateUserOnRequest } from "./adapters/auth.ts";
+import { logger } from "./adapters/logging.ts";
 
 // Extracts the input type a validator middleware produces, so a handler's
 // Context stays in sync with the validator instead of duplicating the shape.
@@ -41,4 +42,9 @@ export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
   c.set("authUserId", authResult.authUserId);
   c.set("userId", authResult.userId);
   await next();
+});
+
+export const logging = createMiddleware(async (_c, next) => {
+  await next();
+  await logger.flush();
 });
