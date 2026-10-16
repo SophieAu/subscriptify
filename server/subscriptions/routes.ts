@@ -1,6 +1,6 @@
 import type { Context } from "hono";
 import { validator } from "hono/validator";
-import { type AuthEnv, getSpotifyToken } from "../shared/auth.ts";
+import { type AuthEnv, getSpotifyToken } from "../adapters/auth.ts";
 import type { ValidatorInput } from "../shared/validation.ts";
 import { addSource, getActiveTarget, getLastSyncedAt, listSources, removeSource } from "./subscriptions.ts";
 

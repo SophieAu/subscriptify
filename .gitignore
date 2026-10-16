@@ -7,7 +7,7 @@ KEYS.ts
 .env.local
 
 // generated
-server/shared/generated/
+server/adapters/generated/
 web/.astro/
 
 // mac files
