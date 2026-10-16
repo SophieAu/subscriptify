@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client"
-  output   = "../server/shared/generated/prisma"
+  output   = "../server/adapters/generated/prisma"
   runtime  = "deno"
 }
 
@@ -10,7 +10,7 @@ datasource db {
 
 model User {
   id            String         @id @default(cuid())
-  clerkId       String         @unique
+  authUserId    String         @unique
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   subscriptions Subscription[]

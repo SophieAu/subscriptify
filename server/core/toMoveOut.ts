@@ -11,7 +11,7 @@ export const playlistMetadataFields = (spotifyPlaylist: SpotifyPlaylist) => ({
 
 export const getSpotifyTokenForUser = async (userId: string) => {
   const user = await db.user.findUniqueOrThrow({ where: { id: userId } });
-  return await getSpotifyToken(user.clerkId);
+  return await getSpotifyToken(user.authUserId);
 };
 
 export const getSubscriptionsForUser = async (userId: string) =>

@@ -1,12 +1,6 @@
 import type { Context } from "hono";
 import { type AuthEnv, getSpotifyToken } from "./adapters/auth.ts";
-import {
-  addSource,
-  getActiveTarget,
-  getLastSyncedAt,
-  listSources,
-  removeSource,
-} from "./core/subscriptions.ts";
+import { addSource, getActiveTarget, getLastSyncedAt, listSources, removeSource } from "./core/subscriptions.ts";
 import { runSync } from "./core/sync.ts";
 import { validateAddSourcePlaylist, ValidatorInput } from "./middleware.ts";
 
@@ -34,7 +28,7 @@ export const addSourcePlaylist = async (
   c: Context<AuthEnv, "/", ValidatorInput<typeof validateAddSourcePlaylist>>,
 ) => {
   const { spotifyId } = c.req.valid("json");
-  const token = await getSpotifyToken(c.get("clerkUserId"));
+  const token = await getSpotifyToken(c.get("authUserId"));
 
   const source = await addSource(c.get("userId"), spotifyId, token);
 

@@ -1,6 +1,6 @@
 import { getSpotifyToken } from "../server/adapters/auth.ts";
 import { db } from "../server/adapters/db.ts";
-import type { Prisma } from "../server/shared/generated/prisma/client.ts";
+import type { Prisma } from "../server/adapters/generated/prisma/client.ts";
 import { getPlaylist } from "../server/adapters/spotify.ts";
 
 const TARGET_PLAYLIST_SPOTIFY_ID = "4BDYS0S4CYFKAQvwaKYN40";
@@ -9,7 +9,7 @@ const seedTargetPlaylist = async () => {
   const user = await db.user.findFirst();
   if (!user) throw new Error("No user in the db yet — sign in through the app once, then re-run the seed");
 
-  const spotifyToken = await getSpotifyToken(user.clerkId);
+  const spotifyToken = await getSpotifyToken(user.authUserId);
   const newTargetPlaylist = await getPlaylist(spotifyToken, TARGET_PLAYLIST_SPOTIFY_ID);
   const targetPlaylistData = {
     spotifyId: TARGET_PLAYLIST_SPOTIFY_ID,

@@ -11,7 +11,7 @@ const clerk = createClerkClient({
 export type AuthEnv = {
   Variables: {
     userId: string; // our db User.id
-    clerkUserId: string;
+    authUserId: string;
   };
 };
 
@@ -21,18 +21,18 @@ export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
   if (!auth?.userId) return c.json({ error: "Unauthenticated" }, 401);
 
   const user = await db.user.upsert({
-    where: { clerkId: auth.userId },
+    where: { authUserId: auth.userId },
     update: {},
-    create: { clerkId: auth.userId },
+    create: { authUserId: auth.userId },
   });
 
-  c.set("clerkUserId", auth.userId);
+  c.set("authUserId", auth.userId);
   c.set("userId", user.id);
   await next();
 });
 
-export const getSpotifyToken = async (clerkUserId: string) => {
-  const tokens = await clerk.users.getUserOauthAccessToken(clerkUserId, "spotify");
+export const getSpotifyToken = async (authUserId: string) => {
+  const tokens = await clerk.users.getUserOauthAccessToken(authUserId, "spotify");
   const token = tokens.data[0]?.token;
   if (!token) throw new Error("No Spotify token on the Clerk user");
 
