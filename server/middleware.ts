@@ -1,4 +1,4 @@
-import type { MiddlewareHandler } from "hono";
+import type { Context, MiddlewareHandler } from "hono";
 import { validator } from "hono/validator";
 import { createMiddleware } from "hono/factory";
 import { authenticateUserOnRequest } from "./adapters/auth.ts";
@@ -44,7 +44,25 @@ export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
   await next();
 });
 
-export const logging = createMiddleware(async (_c, next) => {
+const logMessage = (c: Context) => ({
+  timestamp: new Date().toISOString(),
+  requestId: c.var.requestId,
+  method: c.req.method,
+  path: c.req.path,
+});
+
+export const logging = createMiddleware(async (c, next) => {
+  logger.info(logMessage(c));
+
+  const start = performance.now();
   await next();
+  const duration = performance.now() - start;
+
+  const message = JSON.stringify({ ...logMessage(c), status: c.res.status, durationMs: Math.round(duration) });
+
+  if (c.res.status >= 500) logger.error(message);
+  else if (c.res.status >= 400) logger.warn(message);
+  else logger.info(message);
+
   await logger.flush();
 });

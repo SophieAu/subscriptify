@@ -3,9 +3,11 @@ import { serveStatic } from "hono/deno";
 import { type AuthEnv, logging, requireAuth } from "./middleware.ts";
 import { addSourcePlaylist, getSourcePlaylist, removeSourcePlaylist, sync } from "./api.ts";
 import { validateAddSourcePlaylist } from "./middleware.ts";
+import { requestId } from "hono/request-id";
 
 const app = new Hono();
 
+app.use(requestId());
 app.use(logging);
 
 app.route(
