@@ -22,7 +22,7 @@ app.route(
   "/api/sync",
   new Hono<AuthEnv>()
     .use(requireAuth)
-    .post("/", async (c) => c.json(await sync(c.get("userId")))),
+    .post("/", sync),
 );
 
 app.use("*", serveStatic({ root: "./web/dist" }));

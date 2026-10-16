@@ -42,9 +42,10 @@ export const removeSourcePlaylist = async (c: Context<AuthEnv, "/:id">) => {
   return c.json({ ok: true });
 };
 
-// GET /api/sync
-export const sync = async (userId: string) => {
-  await runSync(userId);
+// POST /api/sync
+export const sync = async (c: Context<AuthEnv, "/">) => {
+  const userId = c.get("userId");
+  const result = await runSync(userId);
 
-  return null;
+  return c.json(result);
 };
