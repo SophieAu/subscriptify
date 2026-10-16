@@ -17,6 +17,7 @@
     "proseWrap": "preserve"
   },
   "imports": {
+    "@axiomhq/js": "npm:@axiomhq/js@^2.0.0",
     "@std/assert": "jsr:@std/assert@^1.0.19",
     "hono": "npm:hono@^4.12.0",
     "hono/": "npm:/hono@^4.12.0/",
@@ -25,6 +26,7 @@
     "@prisma/adapter-neon": "npm:@prisma/adapter-neon@^7",
     "@neondatabase/serverless": "npm:@neondatabase/serverless@1.1.0",
     "prisma": "npm:prisma@^7",
+    "vitest": "npm:vitest@^5.0.5",
     "zod": "npm:zod@^4.6.7"
   }
 }
