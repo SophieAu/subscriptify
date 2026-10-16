@@ -4,10 +4,12 @@ import { type AuthEnv, logging, requireAuth } from "./middleware.ts";
 import { addSourcePlaylist, getSourcePlaylist, removeSourcePlaylist, sync } from "./api.ts";
 import { validateAddSourcePlaylist } from "./middleware.ts";
 import { requestId } from "hono/request-id";
+import { contextStorage } from "hono/context-storage";
 
 const app = new Hono();
 
 app.use(requestId());
+app.use(contextStorage());
 app.use(logging);
 
 app.route(

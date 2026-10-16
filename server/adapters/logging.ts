@@ -2,44 +2,50 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: just passing along the original console log type */
 import { Axiom } from "@axiomhq/js";
 import { env } from "../env.ts";
+import { getContext } from "hono/context-storage";
 
 const AXIOM_DATASET_NAME = "subscriptify";
 
 const axiom = new Axiom({ token: env.AXIOM_TOKEN });
 
-const formatMessage = (...data: any[]) =>
-  data.map((d) => {
-    if (typeof d !== "object") return String(d);
+type LogMessageFormat = string | object;
 
-    if (Error.isError(d)) return d.stack ?? d.message;
+const formatMessage = (message: LogMessageFormat | Error) => {
+  if (typeof message === "string") return message;
+  if (Error.isError(message)) return message.stack ?? message.message;
 
-    return JSON.stringify(d);
-  }).join(" ");
-
-const logToAxiom = (level: "error" | "warn" | "info", message: string) => {
-  if (!env.IS_PRODUCTION) return;
-
-  axiom.ingest(AXIOM_DATASET_NAME, [{ level, message, timestamp: new Date().toISOString() }]);
+  return message;
 };
 
-const error = (...data: any[]) => {
-  const message = formatMessage(...data);
+const logToAxiom = (level: "error" | "warn" | "info", message: LogMessageFormat) => {
+  if (!env.IS_PRODUCTION) return;
 
-  console.log(`%cERROR: ${message}`, "color: red");
+  axiom.ingest(AXIOM_DATASET_NAME, [{
+    level,
+    message,
+    timestamp: new Date().toISOString(),
+    requestId: getContext().var.requestId,
+  }]);
+};
+
+const error = (logMesaage: LogMessageFormat) => {
+  const message = formatMessage(logMesaage);
+
+  console.error(message);
   logToAxiom("error", message);
 };
 
-const info = (...data: any[]) => {
-  const message = formatMessage(...data);
+const info = (logMesaage: LogMessageFormat) => {
+  const message = formatMessage(logMesaage);
 
-  console.log(`INFO: ${message}`);
+  console.info(message);
   logToAxiom("info", message);
 };
 
-const warn = (...data: any[]) => {
-  const message = formatMessage(...data);
+const warn = (logMesaage: LogMessageFormat) => {
+  const message = formatMessage(logMesaage);
 
-  console.log(`%cWARN: ${message}`, "color: orange");
+  console.warn(message);
   logToAxiom("warn", message);
 };
 

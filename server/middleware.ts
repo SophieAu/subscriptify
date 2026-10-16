@@ -44,21 +44,19 @@ export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
   await next();
 });
 
-const logMessage = (c: Context) => ({
-  timestamp: new Date().toISOString(),
-  requestId: c.var.requestId,
-  method: c.req.method,
-  path: c.req.path,
-});
-
 export const logging = createMiddleware(async (c, next) => {
-  logger.info(logMessage(c));
+  logger.info({ method: c.req.method, path: c.req.path });
 
   const start = performance.now();
   await next();
   const duration = performance.now() - start;
 
-  const message = JSON.stringify({ ...logMessage(c), status: c.res.status, durationMs: Math.round(duration) });
+  const message = {
+    method: c.req.method,
+    path: c.req.path,
+    status: c.res.status,
+    durationMs: Math.round(duration),
+  };
 
   if (c.res.status >= 500) logger.error(message);
   else if (c.res.status >= 400) logger.warn(message);
