@@ -1,6 +1,7 @@
 import { neonConfig } from "@neondatabase/serverless";
 import { PrismaNeon } from "@prisma/adapter-neon";
 import { PrismaClient } from "./generated/prisma/client.ts";
+import { env } from "../env.ts";
 
 // Route pooled queries over stateless HTTP instead of a WebSocket: in a
 // long-running Deno server the WS transport wedges on large writes (a big
@@ -8,7 +9,7 @@ import { PrismaClient } from "./generated/prisma/client.ts";
 neonConfig.poolQueryViaFetch = true;
 
 const adapter = new PrismaNeon({
-  connectionString: Deno.env.get("DATABASE_URL")!,
+  connectionString: env.DATABASE_URL,
 });
 
 export const db = new PrismaClient({ adapter });

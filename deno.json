@@ -24,6 +24,7 @@
     "@prisma/client": "npm:@prisma/client@^7",
     "@prisma/adapter-neon": "npm:@prisma/adapter-neon@^7",
     "@neondatabase/serverless": "npm:@neondatabase/serverless@1.1.0",
-    "prisma": "npm:prisma@^7"
+    "prisma": "npm:prisma@^7",
+    "zod": "npm:zod@^4.6.7"
   }
 }
