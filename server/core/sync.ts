@@ -46,23 +46,25 @@ export const runSync = async (userId: string) => {
   logger.info("target playlist updated");
 
   // 3. get all new songs for all subscribed playlists
-  const potentiallyNewSongs = new Set<string>();
-  for (const { source } of subscriptions) {
-    await refreshSourcePlaylistInfo(token, source.spotifyId);
-    logger.info(`source playlist '${source.name} updated`);
+  const songsPerSourcePlaylist = await Promise.all(
+    subscriptions.map(async ({ source }) => {
+      await refreshSourcePlaylistInfo(token, source.spotifyId);
+      logger.info(`source playlist '${source.name} updated`);
 
-    for (const uri of await getSongsForPlaylist(token, source.spotifyId)) {
-      potentiallyNewSongs.add(uri);
-    }
-    logger.info(`songs for '${source.name} extracted`);
-  }
+      const songsForSourcePlaylist = await getSongsForPlaylist(token, source.spotifyId);
+      logger.info(`songs for '${source.name} extracted`);
+
+      return songsForSourcePlaylist;
+    }),
+  );
+  const potentiallyNewSongs = new Set(songsPerSourcePlaylist.flat());
 
   // 4. add songs to target list
   const toAddToSpotify = getGenuinelyNewSongs(potentiallyNewSongs, tracksCurrentlyInTarget, oldTrackIds);
   if (toAddToSpotify.length > 0) {
     await addSongsToPlaylist(token, targetPlaylistSpotifyId, toAddToSpotify);
   }
-  logger.info({ newSongCount: toAddToSpotify.length });
+  logger.info("New songs added");
 
   // 5. log new songs to db
   const newlySeen = getSongsNotLoggedInDB(tracksCurrentlyInTarget, toAddToSpotify, oldTrackIds);
