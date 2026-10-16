@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/deno";
 import { logger } from "hono/logger";
-import { type AuthEnv, requireAuth } from "./adapters/auth.ts";
+import { type AuthEnv, requireAuth } from "./middleware.ts";
 import { addSourcePlaylist, getSourcePlaylist, removeSourcePlaylist, sync } from "./api.ts";
 import { validateAddSourcePlaylist } from "./middleware.ts";
 

@@ -1,5 +1,4 @@
 import { createClerkClient } from "@clerk/backend";
-import { createMiddleware } from "hono/factory";
 import { db } from "./db.ts";
 import { env } from "../env.ts";
 
@@ -8,17 +7,11 @@ const clerk = createClerkClient({
   publishableKey: env.CLERK_PUBLISHABLE_KEY,
 });
 
-export type AuthEnv = {
-  Variables: {
-    userId: string; // our db User.id
-    authUserId: string;
-  };
-};
-
-export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
-  const state = await clerk.authenticateRequest(c.req.raw);
+type AuthResponse = { error: string } | { userId: string; authUserId: string };
+export const authenticateUserOnRequest = async (rawRequest: Request): Promise<AuthResponse> => {
+  const state = await clerk.authenticateRequest(rawRequest);
   const auth = state.toAuth();
-  if (!auth?.userId) return c.json({ error: "Unauthenticated" }, 401);
+  if (!auth?.userId) return { error: "Unauthenticated" };
 
   const user = await db.user.upsert({
     where: { authUserId: auth.userId },
@@ -26,10 +19,11 @@ export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
     create: { authUserId: auth.userId },
   });
 
-  c.set("authUserId", auth.userId);
-  c.set("userId", user.id);
-  await next();
-});
+  return {
+    authUserId: auth.userId,
+    userId: user.id,
+  };
+};
 
 export const getSpotifyToken = async (authUserId: string) => {
   const tokens = await clerk.users.getUserOauthAccessToken(authUserId, "spotify");
